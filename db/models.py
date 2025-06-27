@@ -4,6 +4,9 @@ from uuid import UUID, uuid4
 
 class UserModel(Base):
 
+    # a name for using on exceptions to let user know which table that they got error
+    model_name_for_exceptions = "User"
+
     __tablename__ = "users"
 
     password: Mapped[str] = mapped_column()
