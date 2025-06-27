@@ -1,9 +1,16 @@
-from schema._input import UserInput 
+from schema._input import UserInput, UserLoginInput
+from schema.output import UserOutput
 from sqlalchemy.ext.asyncio import AsyncSession
 from db import UserModel
+import sqlalchemy as sqa
+from utils.jwt import JWTHandler
 from sqlalchemy.exc import IntegrityError
-from utils.crypt import hash_password
-from utils.exceptions import NotFoundException, DuplicateException
+from utils.crypt import hash_password, compare_password
+from utils.exceptions import (
+    NotFoundException, 
+    DuplicateException,
+    UsernameOrPasswordException
+)
 
 
 
@@ -34,3 +41,21 @@ class UserOps:
                 raise DuplicateException(user.model_name_for_exceptions)
 
         return user
+    
+
+    async def login(self, user_data: UserLoginInput) -> UserOutput:
+        
+        select_query = sqa.select(UserModel).where(UserModel.username == user_data.username)
+
+        async with self.db as conn:
+
+            user = await conn.scalar(select_query)
+
+            if user is None:
+                raise UsernameOrPasswordException
+            
+            if not compare_password(user_data.password, user.password):
+                raise UsernameOrPasswordException
+
+
+        return JWTHandler.generate(username=user_data.username)
