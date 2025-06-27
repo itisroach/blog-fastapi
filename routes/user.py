@@ -16,6 +16,6 @@ async def register(
     body: UserInput = Body(),
 ):
 
-    user_ops = UserOps(db_session)
+    user = await UserOps(db_session).create(body)
 
-    return await user_ops.create(body)    
+    return user
