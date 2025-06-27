@@ -17,3 +17,12 @@ class DuplicateException(HTTPException):
         self.status_code = status.HTTP_409_CONFLICT
 
         self.detail = f"the given credentials is already on {model_name} table"
+
+
+
+class UsernameOrPasswordException(HTTPException):
+    
+    def __init__(self):
+        self.status_code = status.HTTP_400_BAD_REQUEST
+
+        self.detail = "the give username or password is wrong" 
