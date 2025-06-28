@@ -14,3 +14,8 @@ class UserLoginInput(BaseModel):
 
     username: str
     password: str
+
+
+class UserRefreshTokenInput(BaseModel):
+
+    token: str
