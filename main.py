@@ -23,7 +23,7 @@ app.include_router(
 
 app.include_router(
     router=user.router,
-    prefix="/user"
+    prefix="/users"
 )
 
 
