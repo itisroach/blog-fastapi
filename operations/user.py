@@ -1,5 +1,13 @@
-from schema._input import UserInput, UserLoginInput
-from schema.output import UserOutput, JWTOutput
+from schema._input import (
+    UserInput, 
+    UserLoginInput, 
+    UpdateUserInput
+)
+from schema.output import (
+    UserOutput, 
+    JWTOutput, 
+    UserUpdateOutput
+)
 from sqlalchemy.ext.asyncio import AsyncSession
 from db import UserModel
 import sqlalchemy as sqa
@@ -9,7 +17,8 @@ from utils.crypt import hash_password, compare_password
 from utils.exceptions import (
     NotFoundException, 
     DuplicateException,
-    UsernameOrPasswordException
+    UsernameOrPasswordException,
+    NoFieldWerePassed
 )
 
 
@@ -62,7 +71,7 @@ class UserOps:
     
         return result
 
-    async def get_by_username(self, username: str) -> UserModel:
+    async def get_by_username(self, username: str) -> UserOutput:
 
         select_query = sqa.select(UserModel).where(UserModel.username == username)
 
@@ -83,3 +92,47 @@ class UserOps:
         result = await JWTHandler(self.db).generate(username)
 
         return result
+    
+
+    async def update(self, old_username: str , updated_data: UpdateUserInput) -> UserOutput | UserUpdateOutput:
+
+        update_fields = {}
+
+        if updated_data.username is not None:
+            update_fields["username"] = updated_data.username
+
+        if updated_data.name is not None:
+            update_fields["name"] = updated_data.name
+        
+
+        if not update_fields:
+            raise NoFieldWerePassed
+
+        update_query = sqa.update(UserModel).where(UserModel.username == old_username).values(**update_fields)
+
+
+        async with self.db as conn:
+            
+            result = await conn.execute(update_query)
+            await conn.commit()
+            
+
+            if result.rowcount == 0:
+                raise NotFoundException(UserModel.model_name_for_exceptions)
+
+        username_to_fetch = updated_data.username if updated_data.username else old_username
+
+        updated_user = await self.get_by_username(username_to_fetch)
+
+        if updated_data.username:
+    
+            jwt = await JWTHandler(self.db).generate(username_to_fetch)
+
+            return UserUpdateOutput(user=updated_user, token=jwt)
+        
+
+        return updated_user
+
+
+
+            
