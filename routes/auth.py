@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Body
-from schema._input import UserInput, UserLoginInput
+from schema._input import UserInput, UserLoginInput, UserRefreshTokenInput
 from operations.user import UserOps
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated
@@ -30,3 +30,14 @@ async def login(
     result = await UserOps(db_session).login(body)
 
     return result
+
+
+
+@router.post("/refresh-token")
+async def refresh_token(
+    db_session: Annotated[AsyncSession, Depends(get_db)],
+    body: UserRefreshTokenInput = Body(),
+):
+    jwt_tokens = await UserOps(db_session).refresh_token(body.token)
+
+    return jwt_tokens
