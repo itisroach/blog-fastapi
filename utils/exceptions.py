@@ -36,3 +36,11 @@ class InvalideTokenException(HTTPException):
         self.status_code = status.HTTP_400_BAD_REQUEST
 
         self.detail = message
+
+
+class NoFieldWerePassed(HTTPException):
+
+    def __init__(self):
+        self.status_code = status.HTTP_400_BAD_REQUEST
+
+        self.detail = "no fields were passed to be processed"
