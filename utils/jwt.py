@@ -10,7 +10,7 @@ import sqlalchemy as sqa
 
 class JWTHandler:
 
-    def __init__(self, db_session: AsyncSession):
+    def __init__(self, db_session: AsyncSession = None):
         self.db_session = db_session
 
     async def generate(self, username: str, exp_time: datetime = None) -> JWTOutput:
