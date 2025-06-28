@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import user
+from routes import auth, user
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from db.engine import engine, Base
@@ -17,8 +17,13 @@ app = FastAPI(lifespan=lifespan)
 
 
 app.include_router(
-    router=user.router,
+    router=auth.router,
     prefix="/auth"
+)
+
+app.include_router(
+    router=user.router,
+    prefix="/user"
 )
 
 
