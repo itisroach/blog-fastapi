@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
+from sqlalchemy import text
 
 engine = create_async_engine("sqlite+aiosqlite:///./database.db")
 
@@ -21,6 +22,8 @@ async def get_db():
     db = Session()
 
     try:
+        await db.execute(text("pragma foreign_keys=ON"))
+        await db.commit()
         yield db
     
     finally:
