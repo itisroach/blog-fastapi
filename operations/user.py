@@ -1,5 +1,5 @@
 from schema._input import UserInput, UserLoginInput
-from schema.output import UserOutput
+from schema.output import UserOutput, JWTOutput
 from sqlalchemy.ext.asyncio import AsyncSession
 from db import UserModel
 import sqlalchemy as sqa
@@ -20,7 +20,7 @@ class UserOps:
         self.db = db_connection        
 
 
-    async def create(self, user_data: UserInput) -> UserModel:
+    async def create(self, user_data: UserInput) -> UserOutput:
         
         hashed_password = hash_password(user_data.password)
 
@@ -40,10 +40,10 @@ class UserOps:
             except IntegrityError:
                 raise DuplicateException(user.model_name_for_exceptions)
 
-        return user
+        return UserOutput.show(user)
     
 
-    async def login(self, user_data: UserLoginInput) -> UserOutput:
+    async def login(self, user_data: UserLoginInput) -> JWTOutput:
         
         select_query = sqa.select(UserModel).where(UserModel.username == user_data.username)
 
@@ -59,3 +59,17 @@ class UserOps:
 
 
         return JWTHandler.generate(username=user_data.username)
+    
+
+    async def get_by_username(self, username: str) -> UserModel:
+
+        select_query = sqa.select(UserModel).where(UserModel.username == username)
+
+        async with self.db as conn:
+
+            user = await conn.scalar(select_query)
+
+            if user is None:
+                raise NotFoundException(UserModel.model_name_for_exceptions)
+            
+            return UserOutput.show(user)
