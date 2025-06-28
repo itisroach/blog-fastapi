@@ -55,7 +55,7 @@ class JWTHandler:
         return (refresh_token, payload)
     
 
-    async def decode_and_verify_token(self, token: str) -> str:
+    async def decode_and_verify_token(self, token: str, is_refresh_token: bool = False) -> str:
 
         try:
             value = jwt.decode(token, key=SECRET, algorithms=[ALGORITHM])
@@ -65,17 +65,17 @@ class JWTHandler:
             raise InvalideTokenException(str(e))
         
     
-        if value["token_type"] == "access": 
-            raise InvalideTokenException("the give token is access token, you should pass refresh token")
+        if is_refresh_token:
+            if value["token_type"] == "access": 
+                raise InvalideTokenException("the give token is access token, you should pass refresh token")
         
+            token_exists = await self.check_token_existance(token=token)
 
-        token_exists = await self.check_token_existance(token=token)
+
+            if not token_exists:
+                raise InvalideTokenException("refresh token should be used once, use fresh refresh token instead")
 
 
-        if not token_exists:
-            raise InvalideTokenException("refresh token should be used once, use fresh refresh token instead")
-
-    
         return value["username"]
     
 
