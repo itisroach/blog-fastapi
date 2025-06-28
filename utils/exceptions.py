@@ -26,3 +26,13 @@ class UsernameOrPasswordException(HTTPException):
         self.status_code = status.HTTP_400_BAD_REQUEST
 
         self.detail = "the give username or password is wrong" 
+
+
+
+
+class InvalideTokenException(HTTPException):
+
+    def __init__(self, message: str):
+        self.status_code = status.HTTP_400_BAD_REQUEST
+
+        self.detail = message
