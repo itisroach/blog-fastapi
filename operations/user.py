@@ -58,8 +58,9 @@ class UserOps:
                 raise UsernameOrPasswordException
 
 
-        return JWTHandler.generate(username=user_data.username)
+        result = await JWTHandler(self.db).generate(username=user_data.username)
     
+        return result
 
     async def get_by_username(self, username: str) -> UserModel:
 
@@ -73,3 +74,12 @@ class UserOps:
                 raise NotFoundException(UserModel.model_name_for_exceptions)
             
             return UserOutput.show(user)
+        
+
+    async def refresh_token(self, token: str) -> JWTOutput:
+
+        username = await JWTHandler(self.db).decode_and_verify_token(token)
+
+        result = await JWTHandler(self.db).generate(username)
+
+        return result
