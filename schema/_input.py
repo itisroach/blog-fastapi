@@ -14,6 +14,12 @@ class UserLoginInput(BaseModel):
 
     username: str
     password: str
+    
+
+class UpdateUserInput(BaseModel):
+
+    username: Optional[str] = Field(min_length=3, max_length=32, default=None)
+    name: Optional[str] = Field(min_length=3, max_length=32, default=None)
 
 
 class UserRefreshTokenInput(BaseModel):

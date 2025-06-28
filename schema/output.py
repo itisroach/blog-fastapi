@@ -18,3 +18,10 @@ class JWTOutput(BaseModel):
 
     access: str
     refresh: str
+
+
+
+class UserUpdateOutput(BaseModel):
+
+    user: UserOutput
+    token: JWTOutput

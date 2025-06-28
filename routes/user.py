@@ -1,21 +1,33 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Body
 from operations.user import UserOps
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
 from db.engine import get_db
 from utils.dependency import jwt_required
-
+from schema._input import UpdateUserInput
 
 router = APIRouter()
 
 
 
-@router.get("/{username}/")
+@router.get("/get/{username}/")
 async def get_user(
     username: str,
     username_jwt: Annotated[str, Depends(jwt_required)],
     db_session: Annotated[AsyncSession, Depends(get_db)],
 ):
     user = await UserOps(db_session).get_by_username(username)
+
+    return user
+
+
+@router.put("/update")
+async def update_user(
+    db_session: Annotated[AsyncSession, Depends(get_db)],
+    username: Annotated[str, Depends(jwt_required)],
+    body: UpdateUserInput = Body(),
+):
+    
+    user = await UserOps(db_session).update(username, body)
 
     return user
