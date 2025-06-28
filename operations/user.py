@@ -78,7 +78,7 @@ class UserOps:
 
     async def refresh_token(self, token: str) -> JWTOutput:
 
-        username = await JWTHandler(self.db).decode_and_verify_token(token)
+        username = await JWTHandler(self.db).decode_and_verify_token(token, True)
 
         result = await JWTHandler(self.db).generate(username)
 
