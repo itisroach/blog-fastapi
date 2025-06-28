@@ -18,3 +18,16 @@ class UserModel(Base):
     id: Mapped[UUID] = mapped_column(primary_key=True, default_factory=uuid4)
 
     
+
+class TokenModel(Base):
+    
+    __tablename__ = "refresh_tokens"
+
+
+    id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, init=False)
+
+    username: Mapped[str] = mapped_column(unique=True)
+
+    refresh_token: Mapped[str] = mapped_column()
+
+    expiration: Mapped[int] = mapped_column()
