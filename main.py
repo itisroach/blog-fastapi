@@ -4,6 +4,8 @@ from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from db.engine import engine, Base
 
+
+# initilizing database on start app in Fast API's life span
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     
@@ -15,7 +17,7 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
 app = FastAPI(lifespan=lifespan)
 
-
+# including routes with prefix from other files 
 app.include_router(
     router=auth.router,
     prefix="/auth"

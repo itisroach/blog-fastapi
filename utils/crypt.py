@@ -3,6 +3,12 @@ import bcrypt
 
 def hash_password(plain_password: str) -> str:
     
+
+    """
+        hashing password using auto generated salt
+    """
+
+
     plain_password = bytes(plain_password, "utf-8")
 
     salt = bcrypt.gensalt()
@@ -14,6 +20,10 @@ def hash_password(plain_password: str) -> str:
 
 
 def compare_password(plain: str, hashed: str) -> bool:
+
+    """
+        comapring two hashes and True for their match and False not matching
+    """
 
     plain = bytes(plain, "utf-8")
     hashed = bytes(hashed, "utf-8")
