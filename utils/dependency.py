@@ -9,9 +9,10 @@ from fastapi import Depends
 oauth_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 async def jwt_required(
+    db_session: Annotated[AsyncSession, Depends(get_db)],
     token: str = Depends(oauth_scheme)
 ):
 
-    decoded_username = await JWTHandler().decode_and_verify_token(token)
+    decoded_username = await JWTHandler(db_session).decode_and_verify_token(token)
 
-    return decoded_username
+    return (db_session, decoded_username)
