@@ -10,7 +10,7 @@ import sqlalchemy as sqa
 
 class JWTHandler:
 
-    def __init__(self, db_session: AsyncSession = None):
+    def __init__(self, db_session: AsyncSession):
         self.db_session = db_session
 
     async def generate(self, username: str, exp_time: datetime = None) -> JWTOutput:
@@ -42,7 +42,7 @@ class JWTHandler:
 
 
     def generate_referesh_token(self, username: str):
-        exp_time = datetime.now() + timedelta(minutes=1)
+        exp_time = datetime.now() + timedelta(days=2)
         
         payload = {
             "exp": int(exp_time.timestamp()),
@@ -74,6 +74,11 @@ class JWTHandler:
 
             if not token_exists:
                 raise InvalideTokenException("refresh token should be used once, use fresh refresh token instead")
+
+
+        from operations.user import UserOps
+
+        await UserOps(self.db_session).get_by_username(value["username"])
 
 
         return value["username"]
