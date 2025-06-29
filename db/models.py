@@ -28,7 +28,11 @@ class TokenModel(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, autoincrement=True, init=False)
 
-    username: Mapped[str] = mapped_column(String, ForeignKey("users.username", onupdate="CASCADE"), unique=True, nullable=False)
+    username: Mapped[str] = mapped_column(
+        String, 
+        ForeignKey("users.username", onupdate="CASCADE", ondelete="CASCADE"), 
+        unique=True, nullable=False
+    )
 
     refresh_token: Mapped[str] = mapped_column()
 
