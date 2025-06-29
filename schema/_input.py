@@ -25,3 +25,13 @@ class UpdateUserInput(BaseModel):
 class UserRefreshTokenInput(BaseModel):
 
     token: str
+
+
+class PostInput(BaseModel):
+
+    title: str = Field(min_length=10, max_length=128)
+
+    content: str = Field(min_length=128, max_length=1024)
+
+    username: str
+
