@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from routes import auth, user
+from routes import auth, user, post
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from db.engine import engine, Base
@@ -27,7 +27,10 @@ app.include_router(
     router=user.router,
     prefix="/users"
 )
-
+app.include_router(
+    router=post.router,
+    prefix="/posts"
+)
 
 @app.get("/")
 async def hello():
