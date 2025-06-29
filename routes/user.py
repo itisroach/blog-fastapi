@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Body
+from fastapi import APIRouter, Depends, Body, Response, status
 from operations.user import UserOps
 from typing import Annotated
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -13,9 +13,11 @@ router = APIRouter()
 @router.get("/get/{username}/")
 async def get_user(
     username: str,
-    username_jwt: Annotated[str, Depends(jwt_required)],
-    db_session: Annotated[AsyncSession, Depends(get_db)],
+    depends_tuple: tuple = Depends(jwt_required),
 ):
+
+    db_session, _ = depends_tuple
+
     user = await UserOps(db_session).get_by_username(username)
 
     return user
@@ -23,11 +25,25 @@ async def get_user(
 
 @router.put("/update")
 async def update_user(
-    db_session: Annotated[AsyncSession, Depends(get_db)],
-    username: Annotated[str, Depends(jwt_required)],
+    depends_tuple: tuple = Depends(jwt_required),
     body: UpdateUserInput = Body(),
 ):
     
+    db_session, username = depends_tuple
+
     user = await UserOps(db_session).update(username, body)
 
     return user
+
+
+@router.delete("/delete")
+async def delete_user(
+    response: Response,
+    depends_tuple: tuple = Depends(jwt_required),
+):
+
+    db_session, username = depends_tuple
+
+    await UserOps(db_session).delete(username)
+
+    response.status_code = status.HTTP_204_NO_CONTENT
