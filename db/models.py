@@ -2,6 +2,7 @@ from db import Base
 from sqlalchemy.orm import mapped_column, Mapped
 from sqlalchemy import ForeignKey, String
 from uuid import UUID, uuid4
+from datetime import datetime
 
 
 class UserModel(Base):
@@ -19,6 +20,7 @@ class UserModel(Base):
 
     id: Mapped[UUID] = mapped_column(primary_key=True,default_factory=uuid4)
 
+    created_at: Mapped[datetime] = mapped_column(default_factory=datetime.now)
     
 
 class TokenModel(Base):
@@ -37,3 +39,26 @@ class TokenModel(Base):
     refresh_token: Mapped[str] = mapped_column()
 
     expiration: Mapped[int] = mapped_column()
+
+
+
+class PostModel(Base):
+
+
+    __tablename__ = "posts"
+
+    model_name_for_exceptions = "Post"
+
+    id: Mapped[int] = mapped_column(autoincrement=True, primary_key=True, init=False)
+
+    username: Mapped[str] = mapped_column(
+        String,
+        ForeignKey("users.username", ondelete="CASCADE", onupdate="CASCADE"),
+        nullable=False
+    )
+
+    content: Mapped[str] = mapped_column(nullable=False)
+
+    title: Mapped[str] = mapped_column(nullable=False)
+
+    created_at: Mapped[datetime] = mapped_column(default_factory=datetime.now)
