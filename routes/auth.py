@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Body
+from fastapi import APIRouter, Body, Response, status
 from schema._input import UserInput, UserLoginInput, UserRefreshTokenInput
 from operations.user import UserOps
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,11 +12,14 @@ router = APIRouter()
 
 @router.post("/register")
 async def register(
+    response: Response,
     db_session: Annotated[AsyncSession, Depends(get_db)],
     body: UserInput = Body(),
 ):
 
     user = await UserOps(db_session).create(body)
+
+    response.status_code = status.HTTP_201_CREATED
 
     return user
 
