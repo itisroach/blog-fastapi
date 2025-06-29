@@ -132,6 +132,20 @@ class UserOps:
         
 
         return updated_user
+    
+    async def delete(self, username: str):
+        print(username)
+        delete_query = sqa.delete(UserModel).where(UserModel.username == username)
+
+        async with self.db as conn:
+
+            result = await conn.execute(delete_query)
+            await conn.commit()
+
+            if result.rowcount == 0:
+                
+                raise NotFoundException(UserModel.model_name_for_exceptions)
+            
 
 
 
