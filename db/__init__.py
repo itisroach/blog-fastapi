@@ -1,8 +1,9 @@
 from db.engine import Base
-from db.models import UserModel
+from db.models import UserModel, PostModel
 
 
 __all__ = [
     "Base",
-    "UserModel"
+    "UserModel",
+    "PostModel"
 ]
