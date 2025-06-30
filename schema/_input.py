@@ -19,7 +19,9 @@ class NoWhiteSpace:
             if not value.strip():
                 raise ValueError(f"{field.field_name} cannot be empty or only whitespace")
 
-        return value.strip()
+            return value.strip()
+        
+        return value
     
 # a class to inherit from for checking if username contains white space in between and turn them to lowercase 
 class NormalizeUsername:
@@ -76,5 +78,16 @@ class PostInput(BaseModel, NoWhiteSpace):
     title: str = Field(min_length=10, max_length=128)
 
     content: str = Field(min_length=128, max_length=1024)
+
+    __strip_fields__ = ("title", "content")
+
+
+class PostUpdateInput(BaseModel, NoWhiteSpace):
+
+    id: int
+
+    title: Optional[str] = Field(min_length=10, max_length=128, default=None)
+
+    content: Optional[str] = Field(min_length=128, max_length=1024, default=None)
 
     __strip_fields__ = ("title", "content")
