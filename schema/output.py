@@ -14,6 +14,10 @@ class UserOutput(BaseModel):
     # this method will receive an user model and filter fields that are not meant to be displayed to user
     @classmethod
     def show(self, data: UserModel):
+
+        if isinstance(data, UserOutput):
+            return data
+
         return UserOutput(id=data.id, name=data.name, username=data.username, created_at=data.created_at)
 
 class JWTOutput(BaseModel):
@@ -45,6 +49,9 @@ class PostOutput(BaseModel):
     @classmethod
     def show(self, data: PostModel, user: UserModel) -> "PostOutput":
         
+        if isinstance(data, PostOutput):
+            return data
+
         user = UserOutput.show(user)
         
         return PostOutput(
