@@ -1,9 +1,9 @@
 from schema.output import PostOutput
-from schema._input import PostInput
+from schema._input import PostInput, PostUpdateInput
 from sqlalchemy.ext.asyncio import AsyncSession
 from db import UserModel, PostModel
 from operations.user import UserOps
-from utils.exceptions import NotFoundException
+from utils.exceptions import NotFoundException, NoAccessToResource
 import sqlalchemy as sqa
 
 class PostOps:
@@ -75,3 +75,30 @@ class PostOps:
             
 
         return [PostOutput.show(post, user) for post in results]
+    
+
+    async def update(self, updated_data: PostUpdateInput, username: str) -> PostOutput:
+
+        post = await self.get(updated_data.id)
+        
+        if post.user.username != username:
+            raise NoAccessToResource
+
+        dic_fields = {}
+
+        if updated_data.title:
+            dic_fields["title"] = updated_data.title
+
+        if updated_data.content:
+            dic_fields["content"] = updated_data.content
+
+        query = sqa.update(PostModel).where(PostModel.id == updated_data.id).values(**dic_fields)
+
+
+        async with self.db as conn:
+            await conn.execute(query)
+            await conn.commit()
+
+        updated_post = await self.get(updated_data.id)
+
+        return PostOutput.show(updated_post, post.user)
