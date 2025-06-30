@@ -3,7 +3,7 @@ from utils.dependency import jwt_required
 from db.engine import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from operations.post import PostOps
-from schema._input import PostInput
+from schema._input import PostInput, PostUpdateInput
 
 
 router = APIRouter()
@@ -45,5 +45,18 @@ async def get_post_by_username(
 ):
     
     result = await PostOps(db_session).get_by_username(username, page)
+
+    return result
+
+
+@router.put("/update")
+async def update_post(
+    depend_tuple: tuple = Depends(jwt_required),
+    body: PostUpdateInput = Body()
+):
+    
+    db_session, username = depend_tuple
+
+    result = await PostOps(db_session).update(body, username)
 
     return result
