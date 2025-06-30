@@ -102,3 +102,19 @@ class PostOps:
         updated_post = await self.get(updated_data.id)
 
         return PostOutput.show(updated_post, post.user)
+    
+
+    async def delete(self, id: int, username: str):
+
+        post = await self.get(id)
+
+        if post.user.username != username:
+            raise NoAccessToResource 
+
+
+        delete_query = sqa.delete(PostModel).where(PostModel.id == id)
+
+        async with self.db as conn:
+
+            await conn.execute(delete_query)
+            await conn.commit()
