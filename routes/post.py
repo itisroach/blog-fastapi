@@ -35,3 +35,15 @@ async def get_post(
     post = await PostOps(db_session).get(post_id)
 
     return post
+
+
+@router.get("/{username}/get")
+async def get_post_by_username(
+    username: str,
+    page: int = 1,
+    db_session: AsyncSession = Depends(get_db)
+):
+    
+    result = await PostOps(db_session).get_by_username(username, page)
+
+    return result
