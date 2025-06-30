@@ -28,8 +28,6 @@ class UsernameOrPasswordException(HTTPException):
         self.detail = "the give username or password is wrong" 
 
 
-
-
 class InvalideTokenException(HTTPException):
 
     def __init__(self, message: str):
@@ -44,3 +42,12 @@ class NoFieldWerePassed(HTTPException):
         self.status_code = status.HTTP_400_BAD_REQUEST
 
         self.detail = "no fields were passed to be processed"
+
+
+
+class NoAccessToResource(HTTPException):
+
+    def __init__(self):
+        self.status_code = status.HTTP_403_FORBIDDEN
+
+        self.detail = "you are not authorized to access this action"
