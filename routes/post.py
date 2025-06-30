@@ -60,3 +60,17 @@ async def update_post(
     result = await PostOps(db_session).update(body, username)
 
     return result
+
+
+@router.delete("/delete/{id}")
+async def delete_post(
+    response: Response,
+    id: int,
+    depend_tuple: tuple = Depends(jwt_required)
+):
+
+    db_session, username = depend_tuple
+
+    await PostOps(db_session).delete(id, username)
+
+    response.status_code = status.HTTP_204_NO_CONTENT
